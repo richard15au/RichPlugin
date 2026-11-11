@@ -1,0 +1,40 @@
+{
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "caveman@caveman": true,
+    "ponytail@ponytail": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(.claude/scripts/deepseek_agent.sh:*)",
+      "Bash(python3 .claude/scripts/deepseek_worker.py:*)",
+      "Bash(rtk:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./node_modules/**)",
+      "Read(./.next/**)",
+      "Read(./dist/**)",
+      "Read(./package-lock.json)",
+      "Read(./pnpm-lock.yaml)",
+      "Read(./yarn.lock)",
+      "Read(./vault/.obsidian/**)",
+      "Read(./.claude/logs/**)",
+      "Read(./.worktrees/**)"
+    ]
+  }
+}

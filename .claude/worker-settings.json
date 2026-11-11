@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "caveman@caveman": false
+  },
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./node_modules/**)",
+      "Read(./.claude/logs/**)",
+      "Edit(./vault/specs/**)",
+      "Write(./vault/specs/**)",
+      "Edit(./.claude/**)",
+      "Write(./.claude/**)",
+      "Edit(./CLAUDE.md)"
+    ]
+  }
+}
