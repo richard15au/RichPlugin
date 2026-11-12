@@ -21,6 +21,25 @@ describe("TaskList", () => {
     expect(() => new TaskList().complete(99)).toThrow("not found");
   });
 
+  it("removes a task by id", () => {
+    const list = new TaskList();
+    const task = list.add("Remove me");
+    list.remove(task.id);
+    expect(list.list()).toHaveLength(0);
+  });
+
+  it("keeps other tasks when removing one", () => {
+    const list = new TaskList();
+    const first = list.add("One");
+    list.add("Two");
+    list.remove(first.id);
+    expect(list.list().map((t) => t.title)).toEqual(["Two"]);
+  });
+
+  it("throws when removing a missing task", () => {
+    expect(() => new TaskList().remove(99)).toThrow("Task 99 not found");
+  });
+
   it("returns a copy of the list", () => {
     const list = new TaskList();
     list.add("One");
