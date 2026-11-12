@@ -32,8 +32,8 @@ Each task has a priority, and the list can be shown with the most important task
 `src/tasks.ts`, `src/tasks.test.ts`, `src/format.ts`, `src/format.test.ts`.
 
 ## Tasks (orchestrator ticks these off as it goes)
-- [ ] Priority on Task + add/setPriority/byPriority with tests
-- [ ] formatTask shows priority, tests updated
-- [ ] Review + checks
-- [ ] Changelog note
-- [ ] PR opened
+- [x] Priority on Task + add/setPriority/byPriority with tests
+- [x] formatTask shows priority, tests updated
+- [x] Review + checks
+- [x] Changelog note
+- [x] PR opened
