@@ -28,6 +28,8 @@ DIR="$ROOT"
 if [[ -n "$WT" ]]; then
   DIR="$ROOT/.worktrees/$WT"
   git -C "$ROOT" worktree add -q -b "worker/$WT" "$DIR" HEAD
+  # Share installed dependencies so checks run in the worktree (never committed, see add below).
+  [[ -d "$ROOT/node_modules" ]] && ln -s "$ROOT/node_modules" "$DIR/node_modules"
 fi
 
 MODEL="${DEEPSEEK_MODEL:-deepseek-flash}"
@@ -92,7 +94,7 @@ RESULT=$?
 set -e
 
 if [[ -n "$WT" ]]; then
-  git -C "$DIR" add -A
+  git -C "$DIR" add -A -- . ":!node_modules"
   git -C "$DIR" diff --cached --stat | tail -n 1
   if ! git -C "$DIR" diff --cached --quiet; then
     git -C "$DIR" -c user.name="deepseek-worker" -c user.email="worker@localhost" commit -qm "worker($WT): ${TASK:0:60}"
