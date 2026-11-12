@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 # Install rich-plugin into the current git project's .claude/ folder (works locally and in cloud sessions).
 # Usage: curl -fsSL https://raw.githubusercontent.com/richard15au/RichPlugin/main/install.sh | bash
+# User-level (all local projects, once): curl -fsSL .../install.sh | bash -s -- --user
 # Re-run to update. Env: RICHPLUGIN_SRC overrides the repo URL/path (for testing).
 set -euo pipefail
+USER_MODE=0; [[ "${1:-}" == "--user" ]] && USER_MODE=1
 
 SRC="${RICHPLUGIN_SRC:-https://github.com/richard15au/RichPlugin.git}"
-ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "FAIL not inside a git repository"; exit 1; }
 command -v python3 >/dev/null || { echo "FAIL python3 is required"; exit 1; }
-cd "$ROOT"
+if [[ $USER_MODE == 1 ]]; then C="$HOME/.claude"; PLUG='~/.claude/rich-plugin'; mkdir -p "$C"
+else
+  ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "FAIL not inside a git repository"; exit 1; }
+  cd "$ROOT"; C=".claude"; PLUG='.claude/rich-plugin'
+fi
 
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 echo "download $SRC"
@@ -22,25 +27,52 @@ add_if_missing() {  # add_if_missing <src> <dest>
 }
 
 # 2. Plugin files (replaced)
-rm -rf .claude/rich-plugin
-mkdir -p .claude/rich-plugin
-for d in scripts roles skills templates; do cp -R "$P/$d" .claude/rich-plugin/; done
-cp "$P/worker-settings.json" .claude/rich-plugin/
-chmod +x .claude/rich-plugin/scripts/*.sh
-echo "updated .claude/rich-plugin/"
+rm -rf "$C/rich-plugin"
+mkdir -p "$C/rich-plugin"
+for d in scripts roles skills templates; do cp -R "$P/$d" "$C/rich-plugin/"; done
+cp "$P/worker-settings.json" "$C/rich-plugin/"
+chmod +x "$C"/rich-plugin/scripts/*.sh
+echo "updated $C/rich-plugin/"
 
 # 3. Commands (replaced, paths rewritten)
-mkdir -p .claude/commands
+mkdir -p "$C/commands"
 for c in agent-init run-spec; do
-  sed -e 's#\${CLAUDE_PLUGIN_ROOT}#.claude/rich-plugin#g' -e 's#/rich-plugin:#/#g' "$P/commands/$c.md" > ".claude/commands/$c.md"
+  sed -e "s#\${CLAUDE_PLUGIN_ROOT}#$PLUG#g" -e 's#/rich-plugin:#/#g' "$P/commands/$c.md" > "$C/commands/$c.md"
 done
-echo "updated .claude/commands/{agent-init,run-spec}.md"
+echo "updated $C/commands/{agent-init,run-spec}.md"
 
 # 4. Skills (only if missing)
 for s in minimal-code obsidian-docs size-rule ui-design; do
-  [[ -d ".claude/skills/$s" ]] && echo "skip    .claude/skills/$s (exists)" \
-    || { mkdir -p .claude/skills; cp -R "$P/skills/$s" ".claude/skills/$s"; echo "created .claude/skills/$s"; }
+  [[ -d "$C/skills/$s" ]] && echo "skip    $C/skills/$s (exists)" \
+    || { mkdir -p "$C/skills"; cp -R "$P/skills/$s" "$C/skills/$s"; echo "created $C/skills/$s"; }
 done
+
+if [[ $USER_MODE == 1 ]]; then
+  NOTIFY='bash "$HOME/.claude/rich-plugin/scripts/notify.sh"'
+  python3 -I - "$C/settings.json" "$NOTIFY" <<'PY'
+import json, os, sys
+path, cmd = sys.argv[1], sys.argv[2]
+cfg = {}
+if os.path.exists(path):
+    try: cfg = json.load(open(path))
+    except ValueError:
+        print(f"skip    {path} (not valid JSON; fix it and run again)"); sys.exit(0)
+changed = []
+allow = cfg.setdefault("permissions", {}).setdefault("allow", [])
+if not any("deepseek_agent.sh" in a for a in allow):
+    allow.append("Bash(*deepseek_agent.sh:*)"); changed.append("runner permission")
+for ev in ("Notification", "Stop"):
+    groups = cfg.setdefault("hooks", {}).setdefault(ev, [])
+    if not any("notify.sh" in h.get("command", "") for g in groups for h in g.get("hooks", [])):
+        groups.append({"hooks": [{"type": "command", "command": cmd}]}); changed.append(f"{ev} hook")
+if changed:
+    with open(path, "w") as f: json.dump(cfg, f, indent=2); f.write("\n")
+    print("updated " + path + " (" + ", ".join(changed) + ")")
+else: print(f"skip    {path} (already set up)")
+PY
+  echo "done (user-level). In each project run /agent-init once to add stack.json, vault folders, CLAUDE.md rules and .gitignore."
+  exit 0
+fi
 
 # 5. Project setup (only if missing)
 T="$P/templates"
