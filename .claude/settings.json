@@ -15,14 +15,14 @@
     "richard-stack": {
       "source": {
         "source": "github",
-        "repo": "richard15au/Claude-test"
+        "repo": "richard15au/RichPlugin"
       }
     }
   },
   "enabledPlugins": {
     "caveman@caveman": true,
     "ponytail@ponytail": true,
-    "agent-stack@richard-stack": false
+    "rich-plugin@richard-stack": false
   },
   "permissions": {
     "allow": [
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/agent-stack/scripts/notify.sh\""
+            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/rich-plugin/scripts/notify.sh\""
           }
         ]
       }
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/agent-stack/scripts/notify.sh\""
+            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/rich-plugin/scripts/notify.sh\""
           }
         ]
       }

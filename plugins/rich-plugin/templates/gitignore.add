@@ -1,4 +1,4 @@
-# --- agent-stack ---
+# --- rich-plugin ---
 .env
 .env.*
 !.env.example
@@ -6,4 +6,4 @@
 *.key
 .claude/logs/
 .worktrees/
-# --- end agent-stack ---
+# --- end rich-plugin ---

@@ -1,5 +1,5 @@
 {
-  "name": "agent-stack",
+  "name": "rich-plugin",
   "version": "0.2.0",
   "description": "Claude Code orchestrator plus DeepSeek workers: spec-driven flow, size rule, safety rules, optional Slack alerts.",
   "author": { "name": "richard15au" }
