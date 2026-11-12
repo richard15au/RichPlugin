@@ -11,11 +11,18 @@
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       }
+    },
+    "richard-stack": {
+      "source": {
+        "source": "github",
+        "repo": "richard15au/Claude-test"
+      }
     }
   },
   "enabledPlugins": {
     "caveman@caveman": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "agent-stack@richard-stack": true
   },
   "permissions": {
     "allow": [
@@ -35,21 +42,6 @@
       "Read(./vault/.obsidian/**)",
       "Read(./.claude/logs/**)",
       "Read(./.worktrees/**)"
-    ]
-  }
-}
-
-{
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$SLACK_WEBHOOK_URL\" ] && curl -s -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"✅ Agent finished a turn in $(basename \\\"$CLAUDE_PROJECT_DIR\\\")\\\"}\" \"$SLACK_WEBHOOK_URL\" >/dev/null || true"
-          }
-        ]
-      }
     ]
   }
 }
