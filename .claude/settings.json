@@ -38,3 +38,18 @@
     ]
   }
 }
+
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$SLACK_WEBHOOK_URL\" ] && curl -s -X POST -H 'Content-type: application/json' --data \"{\\\"text\\\":\\\"✅ Agent finished a turn in $(basename \\\"$CLAUDE_PROJECT_DIR\\\")\\\"}\" \"$SLACK_WEBHOOK_URL\" >/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
