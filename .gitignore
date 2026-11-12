@@ -17,3 +17,6 @@ secrets/
 
 # Obsidian per-device state
 vault/.obsidian/workspace*.json
+
+# Dependencies
+node_modules/
