@@ -79,9 +79,12 @@ try:
 except ValueError:
     print("FAIL unreadable worker output"); sys.exit(1)
 lines = (d.get("result") or "").strip().splitlines()
-summary = next((l for l in reversed(lines) if l.startswith("SUMMARY:")), "SUMMARY: (none) " + (lines[-1][:150] if lines else ""))
+summary = next((l for l in reversed(lines) if l.startswith("SUMMARY:")), None)
+missing = summary is None
+if missing:  # worker ignored the output contract -> treat as a failure so the orchestrator notices
+    summary = "SUMMARY: NO-SUMMARY " + (lines[-1][:150] if lines else "(empty reply)")
 u = d.get("usage") or {}
-bad = d.get("is_error") or "BLOCKED" in summary or d.get("subtype") == "error_max_turns"
+bad = missing or d.get("is_error") or "BLOCKED" in summary or d.get("subtype") == "error_max_turns"
 print(f"{'FAIL' if bad else 'OK'} turns={d.get('num_turns')} tokens={u.get('input_tokens', '?')}/{u.get('output_tokens', '?')} | {summary[len('SUMMARY:'):].strip()}")
 sys.exit(2 if bad else 0)
 EOF
