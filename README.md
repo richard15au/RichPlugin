@@ -1,4 +1,4 @@
-# claude-test
+# RichPlugin
 
 Small TypeScript test project (Vitest + ESLint) used to try out Claude Code workflows.
 

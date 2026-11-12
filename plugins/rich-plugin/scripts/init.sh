@@ -23,15 +23,15 @@ mkdir -p vault/changelog vault/architecture
 # CLAUDE.md: add our block once, between markers, keeping the user's own text.
 if [[ ! -f CLAUDE.md ]]; then
   { echo "# Project rules"; echo; cat "$T/CLAUDE.block.md"; } > CLAUDE.md; echo "created CLAUDE.md"
-elif ! grep -q 'agent-stack:start' CLAUDE.md; then
-  { echo; cat "$T/CLAUDE.block.md"; } >> CLAUDE.md; echo "updated CLAUDE.md (added agent-stack block)"
+elif ! grep -q 'rich-plugin:start' CLAUDE.md; then
+  { echo; cat "$T/CLAUDE.block.md"; } >> CLAUDE.md; echo "updated CLAUDE.md (added rich-plugin block)"
 else
   echo "skip    CLAUDE.md (block already present)"
 fi
 
 # .gitignore: add our block once.
 touch .gitignore
-if grep -q 'agent-stack ---' .gitignore; then
+if grep -q 'rich-plugin ---' .gitignore; then
   echo "skip    .gitignore (block already present)"
 else
   { echo; cat "$T/gitignore.add"; } >> .gitignore; echo "updated .gitignore"
