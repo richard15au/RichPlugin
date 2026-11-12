@@ -1,11 +1,12 @@
 ---
 description: Implement a spec from vault/specs with the size rule, workers, review and PR
 argument-hint: <spec-name>
-allowed-tools: Bash, Read, Edit, Grep, Glob, Skill
+allowed-tools: Bash, Read, Edit, Grep, Glob, Skill, AskUserQuestion
 ---
 
 Implement `vault/specs/$ARGUMENTS.md`. You are the orchestrator: plan, delegate, review. Keep your own reading small.
 
+0. If `$ARGUMENTS` is empty, list the files in `vault/specs/` (skip `_template.md`), then ask the user which one with AskUserQuestion. If the user's message says to use workers, or to skip them, follow that instead of the size rule.
 1. Read the spec. Open `vault/architecture/` notes only if the spec links them.
 2. Load the `size-rule` skill and apply it. Say in one line whether you will do this directly or delegate, and why.
 3. Work on a branch named `feat/<spec-name>`.
