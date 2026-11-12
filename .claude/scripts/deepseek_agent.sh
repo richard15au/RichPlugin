@@ -22,6 +22,8 @@ while [[ $# -gt 1 ]]; do
 done
 TASK="${1:?usage: deepseek_agent.sh [--worktree NAME] [--max-turns N] \"task\"}"
 [[ "$TASK" == @* ]] && TASK="$(cat "$ROOT/${TASK#@}")"
+# Local use: load the key from the git-ignored .env if it isn't already set.
+if [[ -z "${DEEPSEEK_API_KEY:-}" && -f "$ROOT/.env" ]]; then set -a; source "$ROOT/.env"; set +a; fi
 [[ -n "${DEEPSEEK_API_KEY:-}" ]] || { echo "FAIL DEEPSEEK_API_KEY not set"; exit 1; }
 
 DIR="$ROOT"
