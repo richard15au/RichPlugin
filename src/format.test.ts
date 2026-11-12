@@ -25,4 +25,10 @@ describe("formatTask", () => {
       formatTask({ id: 4, title: "", done: false, priority: "low" }),
     ).toBe("[ ] (low) ");
   });
+
+  it("appends the due date after the title", () => {
+    expect(
+      formatTask({ id: 5, title: "Pay rent", done: false, priority: "high", due: "2026-12-01" }),
+    ).toBe("[ ] (high) Pay rent (due 2026-12-01)");
+  });
 });

@@ -111,4 +111,40 @@ describe("TaskList", () => {
     list.byPriority().pop();
     expect(list.list()).toHaveLength(2);
   });
+
+  it("sets and clears a due date", () => {
+    const list = new TaskList();
+    const task = list.add("Pay rent");
+    expect(list.setDue(task.id, "2026-12-01").due).toBe("2026-12-01");
+    expect(list.setDue(task.id, undefined).due).toBeUndefined();
+  });
+
+  it("rejects a badly formatted or impossible due date", () => {
+    const list = new TaskList();
+    const task = list.add("Pay rent");
+    expect(() => list.setDue(task.id, "12/01/2026")).toThrow("Invalid due date");
+    expect(() => list.setDue(task.id, "2026-02-30")).toThrow("Invalid due date");
+    expect(() => list.setDue(task.id, "2026-13-01")).toThrow("Invalid due date");
+  });
+
+  it("throws when setting a due date on a missing task", () => {
+    expect(() => new TaskList().setDue(99, "2026-12-01")).toThrow("Task 99 not found");
+  });
+
+  it("lists overdue open tasks in original order", () => {
+    const list = new TaskList();
+    const a = list.add("a");
+    const b = list.add("b");
+    const done = list.add("done");
+    const today = list.add("today");
+    list.add("undated");
+    list.setDue(a.id, "2026-01-02");
+    list.setDue(b.id, "2026-01-01");
+    list.setDue(done.id, "2026-01-01");
+    list.complete(done.id);
+    list.setDue(today.id, "2026-06-01");
+    const result = list.overdue("2026-06-01");
+    expect(result.map((t) => t.title)).toEqual(["a", "b"]);
+    expect(list.list()).toHaveLength(5);
+  });
 });
