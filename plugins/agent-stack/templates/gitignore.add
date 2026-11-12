@@ -1,0 +1,9 @@
+# --- agent-stack ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/logs/
+.worktrees/
+# --- end agent-stack ---

@@ -1,0 +1,11 @@
+{
+  "name": "richard-stack",
+  "owner": { "name": "richard15au" },
+  "plugins": [
+    {
+      "name": "agent-stack",
+      "source": "./plugins/agent-stack",
+      "description": "Claude Code orchestrator plus DeepSeek workers: spec-driven flow, size rule, safety rules, optional Slack alerts."
+    }
+  ]
+}
