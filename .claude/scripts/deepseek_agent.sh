@@ -94,7 +94,8 @@ RESULT=$?
 set -e
 
 if [[ -n "$WT" ]]; then
-  git -C "$DIR" add -A -- . ":!node_modules"
+  git -C "$DIR" add -A
+  git -C "$DIR" rm -q --cached --ignore-unmatch node_modules >/dev/null  # belt and braces: never commit the shared link
   git -C "$DIR" diff --cached --stat | tail -n 1
   if ! git -C "$DIR" diff --cached --quiet; then
     git -C "$DIR" -c user.name="deepseek-worker" -c user.email="worker@localhost" commit -qm "worker($WT): ${TASK:0:60}"
