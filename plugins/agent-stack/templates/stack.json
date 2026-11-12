@@ -1,0 +1,15 @@
+{
+  "commands": {
+    "typecheck": "npm run typecheck",
+    "lint": "npm run lint",
+    "test": "npm test"
+  },
+  "extra_allowed": [],
+  "model": "deepseek-flash",
+  "size_rule": {
+    "direct_max_files": 2,
+    "direct_max_lines": 60,
+    "delegate_min_files": 3,
+    "delegate_min_lines": 80
+  }
+}
