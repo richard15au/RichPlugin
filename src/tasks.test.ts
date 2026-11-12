@@ -9,6 +9,7 @@ describe("TaskList", () => {
       title: "Write tests",
       done: false,
       priority: "medium",
+      tags: [],
     });
   });
 
@@ -38,6 +39,7 @@ describe("TaskList", () => {
       title: "Ship it",
       done: false,
       priority: "high",
+      tags: [],
     });
     expect(list.list()[0]?.priority).toBe("high");
   });
@@ -110,5 +112,78 @@ describe("TaskList", () => {
     list.add("Two", "low");
     list.byPriority().pop();
     expect(list.list()).toHaveLength(2);
+  });
+
+  it("adds a trimmed tag and returns the task", () => {
+    const list = new TaskList();
+    const task = list.add("Ship it");
+    expect(list.addTag(task.id, "  docs ")).toBe(task);
+    expect(task.tags).toEqual(["docs"]);
+  });
+
+  it("ignores a duplicate tag", () => {
+    const list = new TaskList();
+    const task = list.add("Ship it");
+    list.addTag(task.id, "docs");
+    list.addTag(task.id, " docs");
+    expect(task.tags).toEqual(["docs"]);
+  });
+
+  it("rejects an empty tag", () => {
+    const list = new TaskList();
+    const task = list.add("Ship it");
+    expect(() => list.addTag(task.id, "   ")).toThrow("Tag cannot be empty");
+  });
+
+  it("throws when adding a tag to a missing task", () => {
+    expect(() => new TaskList().addTag(99, "docs")).toThrow("Task 99 not found");
+  });
+
+  it("removes a tag and returns the task", () => {
+    const list = new TaskList();
+    const task = list.add("Ship it");
+    list.addTag(task.id, "docs");
+    list.addTag(task.id, "urgent");
+    expect(list.removeTag(task.id, "docs")).toBe(task);
+    expect(task.tags).toEqual(["urgent"]);
+  });
+
+  it("does nothing when removing an absent tag", () => {
+    const list = new TaskList();
+    const task = list.add("Ship it");
+    list.addTag(task.id, "docs");
+    expect(list.removeTag(task.id, "urgent")).toBe(task);
+    expect(task.tags).toEqual(["docs"]);
+  });
+
+  it("throws when removing a tag from a missing task", () => {
+    expect(() => new TaskList().removeTag(99, "docs")).toThrow("Task 99 not found");
+  });
+
+  it("returns only the tasks with the tag, in original order", () => {
+    const list = new TaskList();
+    const first = list.add("One");
+    list.add("Two");
+    const third = list.add("Three");
+    list.addTag(first.id, "docs");
+    list.addTag(third.id, "docs");
+    list.addTag(third.id, "urgent");
+    expect(list.byTag("docs")).toEqual([first, third]);
+    expect(list.byTag("urgent")).toEqual([third]);
+  });
+
+  it("returns an empty array when no task has the tag", () => {
+    const list = new TaskList();
+    list.add("One");
+    expect(list.byTag("docs")).toEqual([]);
+  });
+
+  it("returns a copy from byTag and leaves list unchanged", () => {
+    const list = new TaskList();
+    const task = list.add("One");
+    list.addTag(task.id, "docs");
+    list.byTag("docs").pop();
+    expect(list.list()).toHaveLength(1);
+    expect(list.byTag("docs")).toHaveLength(1);
   });
 });
