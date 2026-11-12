@@ -36,4 +36,4 @@ Each task has a priority, and the list can be shown with the most important task
 - [x] formatTask shows priority, tests updated
 - [x] Review + checks
 - [x] Changelog note
-- [ ] PR opened
+- [x] PR opened
