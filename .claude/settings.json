@@ -22,7 +22,7 @@
   "enabledPlugins": {
     "caveman@caveman": true,
     "ponytail@ponytail": true,
-    "agent-stack@richard-stack": true
+    "agent-stack@richard-stack": false
   },
   "permissions": {
     "allow": [
@@ -42,6 +42,28 @@
       "Read(./vault/.obsidian/**)",
       "Read(./.claude/logs/**)",
       "Read(./.worktrees/**)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/agent-stack/scripts/notify.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/plugins/agent-stack/scripts/notify.sh\""
+          }
+        ]
+      }
     ]
   }
 }
