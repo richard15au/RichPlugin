@@ -23,6 +23,12 @@ export class TaskList {
     return task;
   }
 
+  remove(id: number): void {
+    const index = this.tasks.findIndex((t) => t.id === id);
+    if (index === -1) throw new Error(`Task ${id} not found`);
+    this.tasks.splice(index, 1);
+  }
+
   list(): Task[] {
     return [...this.tasks];
   }
