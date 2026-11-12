@@ -5,6 +5,9 @@
 [[ "${DEEPSEEK_WORKER:-}" == "1" ]] && exit 0
 INPUT="$(cat)"
 ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
+# If the project has its own copy (added by agent-init), let that one send, so there are no duplicates.
+LOCAL="$ROOT/.claude/scripts/notify.sh"
+[[ -f "$LOCAL" && "$(realpath "$LOCAL")" != "$(realpath "${BASH_SOURCE[0]}")" ]] && exit 0
 URL="${SLACK_WEBHOOK_URL:-}"
 if [[ -z "$URL" && -f "$ROOT/.env" ]]; then
   URL="$(grep -E '^SLACK_WEBHOOK_URL=' "$ROOT/.env" | head -1 | cut -d= -f2- | tr -d "\"'")"

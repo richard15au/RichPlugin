@@ -37,12 +37,38 @@ else
   { echo; cat "$T/gitignore.add"; } >> .gitignore; echo "updated .gitignore"
 fi
 
-# Let the orchestrator run the runner without a prompt each time.
+# Slack notifier: copy into the project so cloud sessions run it even when the plugin isn't loaded.
+copy_if_missing "$PLUGIN/scripts/notify.sh" .claude/scripts/notify.sh
+chmod +x .claude/scripts/notify.sh
+
+# settings.json: merge in the runner permission and the Slack hooks. Adds only; never removes your settings.
 SETTINGS=.claude/settings.json
-if [[ ! -f "$SETTINGS" ]]; then
-  printf '{\n  "permissions": {\n    "allow": ["Bash(*deepseek_agent.sh:*)"]\n  }\n}\n' > "$SETTINGS"
-  echo "created $SETTINGS"
-else
-  echo "skip    $SETTINGS (exists; add \"Bash(*deepseek_agent.sh:*)\" to permissions.allow yourself if you want no prompts)"
-fi
+python3 -I - "$SETTINGS" <<'PY'
+import json, os, sys
+path = sys.argv[1]
+cfg = {}
+if os.path.exists(path):
+    try:
+        cfg = json.load(open(path))
+    except ValueError:
+        print(f"skip    {path} (not valid JSON; fix it and run again)")
+        sys.exit(0)
+changed = []
+allow = cfg.setdefault("permissions", {}).setdefault("allow", [])
+if not any("deepseek_agent.sh" in a for a in allow):
+    allow.append("Bash(*deepseek_agent.sh:*)"); changed.append("runner permission")
+cmd = 'bash "$CLAUDE_PROJECT_DIR/.claude/scripts/notify.sh"'
+hooks = cfg.setdefault("hooks", {})
+for ev in ("Notification", "Stop"):
+    groups = hooks.setdefault(ev, [])
+    if not any("notify.sh" in h.get("command", "") for g in groups for h in g.get("hooks", [])):
+        groups.append({"hooks": [{"type": "command", "command": cmd}]}); changed.append(f"{ev} Slack hook")
+if changed:
+    existed = os.path.exists(path)
+    with open(path, "w") as f:
+        json.dump(cfg, f, indent=2); f.write("\n")
+    print(("updated " if existed else "created ") + path + " (" + ", ".join(changed) + ")")
+else:
+    print(f"skip    {path} (already set up)")
+PY
 echo "done"

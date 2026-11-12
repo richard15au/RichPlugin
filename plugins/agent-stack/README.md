@@ -22,7 +22,7 @@ Then, in any project (a git repo): `/agent-stack:agent-init`. Copy `.env.example
 - Set a spending cap or alert on your DeepSeek account. Check a client's rules before sending their code to DeepSeek.
 
 ## Slack (optional)
-Put an incoming-webhook URL in `.env` as `SLACK_WEBHOOK_URL`. You get a message whenever Claude is waiting for you; add `SLACK_NOTIFY_ON_STOP=1` for a message after every turn. For PR visibility, use the GitHub app for Slack: `/github subscribe owner/repo reviews comments workflows`.
+Put an incoming-webhook URL in `.env` as `SLACK_WEBHOOK_URL`. You get a message whenever Claude is waiting for you; add `SLACK_NOTIFY_ON_STOP=1` for a message after every turn. `agent-init` copies the notifier to `.claude/scripts/notify.sh` and adds the hooks to `.claude/settings.json`, so it also works in cloud sessions where the plugin isn't loaded. In the cloud, set the variables in the environment and allow `hooks.slack.com` under Network access. For PR visibility, use the GitHub app for Slack: `/github subscribe owner/repo reviews comments workflows`.
 
 ## Known limits
 - The size-rule thresholds are provisional. Test 8 only showed a tie on a 3-check spec; a bigger spec is still to be measured.
